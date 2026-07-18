@@ -31,12 +31,15 @@ A Python-based conversational assistant that answers questions about the content
    OPENROUTER_API_KEY=your_api_key_here
    ```
 
-Usage
-
-The document path is currently set in main.py (documents/cv.pdf by default). Run:
-
-bashpython main.py
-
-Once running, ask questions in the terminal. Type sair, exit, or quit to end the session.
+## Usage
+ 
+The document path is currently set in `main.py` (`documents/cv.pdf` by default). Run:
+ 
+```bash
+python main.py
+```
+ 
+Once running, ask questions in the terminal. Type `sair`, `exit`, or `quit` to end the session.
+ 
 
 Pedro Rodrigues — [LinkedIn](https://www.linkedin.com/in/pedro-rcrodrigues)
