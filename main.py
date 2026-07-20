@@ -79,7 +79,7 @@ def initialize_chat(client: OpenAI, document_as_text: str):
 
         print(response.output_text)
         
-        messages.append({"role": "assistant", "content": response.context_text})
+        messages.append({"role": "assistant", "content": response.output_text})
 
 def main():
        try:
