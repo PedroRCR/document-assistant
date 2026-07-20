@@ -23,10 +23,7 @@ A Python-based conversational assistant that answers questions about the content
    ```
 
 4. Set up environment variables:
-   ```bash
-   cp .env.example .env
-   ```
-   Then edit `.env` and add your API key:
+   Edit `.env` and add your API key:
    ```
    OPENROUTER_API_KEY=your_api_key_here
    ```
