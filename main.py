@@ -1,12 +1,13 @@
 import os
 from dotenv import load_dotenv
-from openai import OpenAI
+from openai import APIConnectionError, APIError, APITimeoutError, OpenAI, RateLimitError
 from pdf_reader import extract_text_from_pdf
 
 load_dotenv()
 
 API_KEY = os.getenv("API_KEY")
-MODEL="tencent/hy3:free"
+#MODEL="tencent/hy3:free"
+MODEL=""
 
 
 def get_client() -> OpenAI:
@@ -40,7 +41,15 @@ def initialize_chat(client: OpenAI, document_as_text: str):
     print("Welcome! Do the questions you want.")
     
     while True:
-        user_input = input("\nYou: ").strip()
+        try:
+            user_input = input("\nYou: ").strip()
+            
+            if not user_input:
+                continue
+   
+        except (KeyboardInterrupt, EOFError):
+            print("\nSee you soon!")
+            break
         
         if user_input.lower() in ("sair", "exit", "quit"):
             print("See you soon!")
@@ -49,21 +58,46 @@ def initialize_chat(client: OpenAI, document_as_text: str):
         print("\nAssistant: ", end="")
         
         messages.append({"role": "user", "content": user_input})
-        
-        response = client.responses.create(
-            model = MODEL,
-            input = messages
-        )
+
+        try:
+            response = client.responses.create(
+                model = MODEL,
+                input = messages
+            )
+        except APITimeoutError:
+            print("Request timed out. Try again.")
+            continue
+        except RateLimitError:
+            print("Rate limit hit. Wait a moment and try again.")
+            continue
+        except APIConnectionError:
+            print("Connection error. Check your network.")
+            continue
+        except APIError as e:
+            print(f"API error: {e}")
+            continue
 
         print(response.output_text)
         
         messages.append({"role": "assistant", "content": response.context_text})
-    
 
 def main():
-    client = get_client()
-    document_as_text = extract_text_from_pdf("documents/cv.pdf")
-    initialize_chat(client, document_as_text)
+       try:
+           client = get_client()
+       except EnvironmentError as e:
+           print(f"Configuration error: {e}")
+           return
+
+       try:
+           document_as_text = extract_text_from_pdf("documents/cv.pdf")
+       except FileNotFoundError:
+           print("Error: documents/cv.pdf not found.")
+           return
+       except Exception as e:
+           print(f"Error reading PDF: {e}")
+           return
+
+       initialize_chat(client, document_as_text)
         
 if __name__ == "__main__":
     main()
